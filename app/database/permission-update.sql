@@ -479,3 +479,18 @@ INSERT INTO system_group_program (id, system_group_id, system_program_id)
 SELECT (SELECT coalesce(max(id),0)+1 FROM system_group_program b), 2,
        (select id from system_program where controller='MovimentoCaixaCustomForm')
 WHERE NOT EXISTS (SELECT 1 FROM system_group_program WHERE system_group_id=2 AND system_program_id=(select id from system_program where controller='MovimentoCaixaCustomForm'));
+
+--- InfinitePay integration
+INSERT INTO system_program (id, name, controller)
+SELECT (SELECT coalesce(max(id),0)+1 FROM system_program b), 'InfinitePay Configuration', 'InfinitePayConfigForm'
+WHERE NOT EXISTS (SELECT 1 FROM system_program WHERE controller='InfinitePayConfigForm');
+
+INSERT INTO system_group_program (id, system_group_id, system_program_id)
+SELECT (SELECT coalesce(max(id),0)+1 FROM system_group_program b), 1,
+       (select id from system_program where controller='InfinitePayConfigForm')
+WHERE NOT EXISTS (SELECT 1 FROM system_group_program WHERE system_group_id=1 AND system_program_id=(select id from system_program where controller='InfinitePayConfigForm'));
+
+INSERT INTO system_group_program (id, system_group_id, system_program_id)
+SELECT (SELECT coalesce(max(id),0)+1 FROM system_group_program b), 2,
+       (select id from system_program where controller='InfinitePayConfigForm')
+WHERE NOT EXISTS (SELECT 1 FROM system_group_program WHERE system_group_id=2 AND system_program_id=(select id from system_program where controller='InfinitePayConfigForm'));

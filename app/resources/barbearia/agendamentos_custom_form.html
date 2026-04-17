@@ -362,6 +362,7 @@
                     <option value="Pix">Pix</option>
                     <option value="Dinheiro">Dinheiro</option>
                     <option value="Cartao">Cartao</option>
+                    <option value="InfinitePay">InfinitePay Tap to Pay</option>
                 </select>
             </div>
             <div class="bb-field" style="grid-column: span 12;">
@@ -437,7 +438,17 @@
                 <option value="Pix">Pix</option>
                 <option value="Dinheiro">Dinheiro</option>
                 <option value="Cartao">Cartao</option>
+                <option value="InfinitePay">InfinitePay Tap to Pay</option>
             </select>
+        </div>
+        <div id="bb-infinitepay-status" class="bb-field d-none" style="margin-top: 16px;">
+            <div style="padding: 12px; border-radius: 8px; background: #f0f8ff; border: 1px solid #b3d9ff;">
+                <div id="bb-infinitepay-waiting" style="text-align: center;">
+                    <i class="fa fa-spinner fa-spin" style="margin-right: 8px;"></i>
+                    <span>Aguardando pagamento via Tap to Pay...</span>
+                </div>
+                <div id="bb-infinitepay-result" style="text-align: center; margin-top: 12px;"></div>
+            </div>
         </div>
         <div class="bb-actions">
             <button type="button" class="btn bb-btn bb-btn-outline" id="bb-btn-cancelar-modal">
@@ -924,9 +935,53 @@
                         this.toast('error', resp.message || 'Erro ao concluir.');
                         return;
                     }
+
+                    // Handle InfinitePay pending payment
+                    if (resp.pending_payment && forma === 'InfinitePay') {
+                        this.el('bb-infinitepay-status').classList.remove('d-none');
+                        this.el('bb-btn-confirmar-concluir').disabled = true;
+                        this.el('bb-btn-cancelar-modal').disabled = true;
+                        this.state.infinitepayInterval = setInterval(() => {
+                            this.checkInfinitePay(resp.agendamento_id);
+                        }, 3000); // Check every 3 seconds
+                        return;
+                    }
+
                     this.toast('success', resp.message || 'Agendamento concluido.');
                     this.closeConcluir();
                     this.loadState();
+                });
+            },
+
+            checkInfinitePay: function (agendamentoId) {
+                const payload = { agendamento_id: agendamentoId };
+                const action = 'class=AgendamentosCustomForm&method=onCheckInfinitePay&payload_json=' + encodeURIComponent(JSON.stringify(payload));
+                this.callJson(action, (resp) => {
+                    if (resp && resp.error) {
+                        console.error('Payment check error:', resp.message);
+                        return;
+                    }
+
+                    if (resp.status === 'approved') {
+                        if (this.state.infinitepayInterval) {
+                            clearInterval(this.state.infinitepayInterval);
+                        }
+                        this.el('bb-infinitepay-waiting').classList.add('d-none');
+                        this.el('bb-infinitepay-result').innerHTML = '<span style="color: #28a745; font-weight: bold;"><i class="fa fa-check-circle"></i> Pagamento confirmado!</span>';
+                        setTimeout(() => {
+                            this.toast('success', 'Agendamento concluido com sucesso!');
+                            this.closeConcluir();
+                            this.loadState();
+                        }, 1500);
+                    } else if (resp.status === 'refused' || resp.status === 'cancelled') {
+                        if (this.state.infinitepayInterval) {
+                            clearInterval(this.state.infinitepayInterval);
+                        }
+                        this.el('bb-infinitepay-waiting').classList.add('d-none');
+                        this.el('bb-infinitepay-result').innerHTML = '<span style="color: #dc3545; font-weight: bold;"><i class="fa fa-times-circle"></i> Pagamento ' + resp.status + '</span>';
+                        this.el('bb-btn-confirmar-concluir').disabled = false;
+                        this.el('bb-btn-cancelar-modal').disabled = false;
+                    }
                 });
             }
         };

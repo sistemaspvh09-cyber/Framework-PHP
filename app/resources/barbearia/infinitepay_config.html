@@ -1,0 +1,285 @@
+<!--[main]-->
+<div class="bb-infinitepay-config">
+    <div class="card">
+        <div class="card-header">
+            <div class="row align-items-center">
+                <div class="col">
+                    <h5 class="mb-0">
+                        <i class="fa fa-credit-card"></i> InfinitePay Tap to Pay
+                    </h5>
+                </div>
+                <div class="col-auto">
+                    <span id="bb-infinitepay-status-badge" class="badge badge-secondary">
+                        [status]
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="card-body">
+            <p class="text-muted small">
+                [hint_credentials]
+            </p>
+
+            <form id="bb-infinitepay-form">
+                <div class="form-group">
+                    <label for="bb-client-id">[label_client_id]</label>
+                    <input 
+                        type="text" 
+                        id="bb-client-id" 
+                        name="client_id" 
+                        class="form-control" 
+                        placeholder="your-client-id"
+                    >
+                    <small class="form-text text-muted">
+                        Get this from your InfinitePay dashboard
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <label for="bb-client-secret">[label_client_secret]</label>
+                    <input 
+                        type="password" 
+                        id="bb-client-secret" 
+                        name="client_secret" 
+                        class="form-control"
+                        placeholder="••••••••••••••••"
+                    >
+                    <small class="form-text text-muted">
+                        Keep this secret secure
+                    </small>
+                </div>
+
+                <div class="form-group">
+                    <div class="custom-control custom-checkbox">
+                        <input 
+                            type="checkbox" 
+                            class="custom-control-input" 
+                            id="bb-show-secret"
+                        >
+                        <label class="custom-control-label" for="bb-show-secret">
+                            Show secret
+                        </label>
+                    </div>
+                </div>
+            </form>
+
+            <div id="bb-error-message" class="alert alert-danger d-none" role="alert">
+                <i class="fa fa-exclamation-circle"></i> <span></span>
+            </div>
+
+            <div id="bb-success-message" class="alert alert-success d-none" role="alert">
+                <i class="fa fa-check-circle"></i> <span></span>
+            </div>
+        </div>
+
+        <div class="card-footer bg-light">
+            <button 
+                type="button" 
+                id="bb-btn-test" 
+                class="btn btn-sm btn-outline-primary"
+            >
+                <i class="fa fa-plug"></i> [btn_test]
+            </button>
+            <button 
+                type="button" 
+                id="bb-btn-save" 
+                class="btn btn-sm btn-primary"
+            >
+                <i class="fa fa-save"></i> [btn_connect]
+            </button>
+            <button 
+                type="button" 
+                id="bb-btn-disconnect" 
+                class="btn btn-sm btn-danger d-none"
+            >
+                <i class="fa fa-unlink"></i> [btn_disconnect]
+            </button>
+            <span id="bb-loading" class="spinner-border spinner-border-sm ms-2 d-none"></span>
+        </div>
+    </div>
+</div>
+
+<style>
+.bb-infinitepay-config {
+    margin-bottom: 20px;
+}
+
+.bb-infinitepay-config .card {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.bb-infinitepay-config .form-group:last-child {
+    margin-bottom: 0;
+}
+
+.bb-infinitepay-config .card-footer button {
+    margin-right: 5px;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('bb-infinitepay-form');
+    const clientIdInput = document.getElementById('bb-client-id');
+    const clientSecretInput = document.getElementById('bb-client-secret');
+    const showSecretCheckbox = document.getElementById('bb-show-secret');
+    const btnTest = document.getElementById('bb-btn-test');
+    const btnSave = document.getElementById('bb-btn-save');
+    const btnDisconnect = document.getElementById('bb-btn-disconnect');
+    const statusBadge = document.getElementById('bb-infinitepay-status-badge');
+    const errorMsg = document.getElementById('bb-error-message');
+    const successMsg = document.getElementById('bb-success-message');
+    const loading = document.getElementById('bb-loading');
+
+    // Toggle password visibility
+    showSecretCheckbox.addEventListener('change', function() {
+        clientSecretInput.type = this.checked ? 'text' : 'password';
+    });
+
+    // Load initial configuration
+    loadConfiguration();
+
+    // Test connection
+    btnTest.addEventListener('click', function() {
+        testConnection();
+    });
+
+    // Save configuration
+    btnSave.addEventListener('click', function() {
+        saveConfiguration();
+    });
+
+    // Disconnect
+    btnDisconnect.addEventListener('click', function() {
+        disconnectInfinitePay();
+    });
+
+    function loadConfiguration() {
+        showLoading(true);
+        __adianti_ajax_exec('class=InfinitePayConfigForm&method=onShow', {}, function(response) {
+            showLoading(false);
+            
+            if (response.is_configured) {
+                clientIdInput.value = response.client_id;
+                updateStatusBadge(true);
+                btnSave.classList.add('d-none');
+                btnDisconnect.classList.remove('d-none');
+                clientIdInput.disabled = true;
+                clientSecretInput.disabled = true;
+            } else {
+                updateStatusBadge(false);
+                btnDisconnect.classList.add('d-none');
+                clientIdInput.disabled = false;
+                clientSecretInput.disabled = false;
+            }
+        });
+    }
+
+    function testConnection() {
+        showLoading(true);
+        __adianti_ajax_exec('class=InfinitePayConfigForm&method=onTestarConexao', {}, function(response) {
+            showLoading(false);
+            
+            if (response.success) {
+                showSuccess(response.message);
+            } else {
+                showError(response.message);
+            }
+        });
+    }
+
+    function saveConfiguration() {
+        const clientId = clientIdInput.value.trim();
+        const clientSecret = clientSecretInput.value.trim();
+
+        if (!clientId) {
+            showError('Client ID is required');
+            return;
+        }
+        if (!clientSecret) {
+            showError('Client Secret is required');
+            return;
+        }
+
+        showLoading(true);
+        __adianti_ajax_exec('class=InfinitePayConfigForm&method=onSave', {
+            client_id: clientId,
+            client_secret: clientSecret
+        }, function(response) {
+            showLoading(false);
+            
+            if (response.success) {
+                showSuccess(response.message);
+                setTimeout(function() {
+                    loadConfiguration();
+                }, 1500);
+            } else {
+                showError(response.message);
+            }
+        });
+    }
+
+    function disconnectInfinitePay() {
+        if (confirm('Are you sure you want to disconnect?')) {
+            showLoading(true);
+            __adianti_ajax_exec('class=InfinitePayConfigForm&method=onDesconectar', {}, function(response) {
+                showLoading(false);
+                
+                if (response.success) {
+                    showSuccess(response.message);
+                    setTimeout(function() {
+                        loadConfiguration();
+                    }, 1500);
+                } else {
+                    showError(response.message);
+                }
+            });
+        }
+    }
+
+    function updateStatusBadge(isConnected) {
+        if (isConnected) {
+            statusBadge.textContent = '[msg_connected]';
+            statusBadge.classList.remove('badge-secondary', 'badge-danger');
+            statusBadge.classList.add('badge-success');
+        } else {
+            statusBadge.textContent = '[msg_not_configured]';
+            statusBadge.classList.remove('badge-success', 'badge-danger');
+            statusBadge.classList.add('badge-secondary');
+        }
+    }
+
+    function showError(message) {
+        errorMsg.querySelector('span').textContent = message;
+        errorMsg.classList.remove('d-none');
+        successMsg.classList.add('d-none');
+        setTimeout(function() {
+            errorMsg.classList.add('d-none');
+        }, 5000);
+    }
+
+    function showSuccess(message) {
+        successMsg.querySelector('span').textContent = message;
+        successMsg.classList.remove('d-none');
+        errorMsg.classList.add('d-none');
+        setTimeout(function() {
+            successMsg.classList.add('d-none');
+        }, 3000);
+    }
+
+    function showLoading(show) {
+        if (show) {
+            loading.classList.remove('d-none');
+            btnTest.disabled = true;
+            btnSave.disabled = true;
+            btnDisconnect.disabled = true;
+        } else {
+            loading.classList.add('d-none');
+            btnTest.disabled = false;
+            btnSave.disabled = false;
+            btnDisconnect.disabled = false;
+        }
+    }
+});
+</script>
+<!--[/main]-->

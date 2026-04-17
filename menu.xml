@@ -123,6 +123,16 @@
         </menu>
     </menuitem>
 
+    <menuitem label='_t{Integrations}'>
+        <icon>fas:plug fa-fw</icon>
+        <menu>
+              <menuitem label='InfinitePay Configuration'>
+                  <icon>fas:credit-card fa-fw</icon>
+                  <action>InfinitePayConfigForm</action>
+              </menuitem>
+        </menu>
+    </menuitem>
+
     <menuitem label='Caixa'>
         <icon>fas:cash-register fa-fw</icon>
         <menu>

@@ -377,7 +377,7 @@ class AgendamentosCustomForm extends TPage
                 throw new RuntimeException('Registro invalido.');
             }
 
-            $formasValidas = ['Pix', 'Dinheiro', 'Cartao'];
+            $formasValidas = ['Pix', 'Dinheiro', 'Cartao', 'InfinitePay'];
             if (!in_array($forma, $formasValidas, true))
             {
                 throw new RuntimeException('Forma de pagamento invalida.');
@@ -393,6 +393,44 @@ class AgendamentosCustomForm extends TPage
                 throw new RuntimeException('Status nao permite concluir.');
             }
 
+            // Handle InfinitePay payment
+            if ($forma === 'InfinitePay')
+            {
+                if (!InfinitePayConfig::isConfigurado())
+                {
+                    throw new RuntimeException('InfinitePay is not configured.');
+                }
+
+                // Create charge in InfinitePay
+                $service = new InfinitePayService;
+                $valor = (float) ($agendamento->valor_cobrado ?? 0);
+                $descricao = 'Agendamento #' . $agendamento->id . ' - ' . ($agendamento->get_servico()->nome ?? 'Serviço');
+                $result = $service->criarCobranca($valor, $descricao, $agendamento->id);
+
+                // Don't complete yet, just save payment method and return charge_id
+                $agendamento->forma_pagamento = $forma;
+                $agendamento->updated_at = date('Y-m-d H:i:s');
+                $agendamento->store();
+
+                $dataRows = self::loadRows(array_merge($param, $payload));
+
+                TTransaction::close();
+
+                self::jsonResponse([
+                    'success' => true,
+                    'pending_payment' => true,
+                    'charge_id' => $result['charge_id'],
+                    'agendamento_id' => $agendamento->id,
+                    'status' => 'pending',
+                    'rows' => $dataRows['rows'],
+                    'total' => $dataRows['total'],
+                    'page' => $dataRows['page'],
+                    'per_page' => $dataRows['per_page'],
+                    'message' => 'Payment initiated. Awaiting confirmation...'
+                ]);
+            }
+
+            // Handle traditional payment methods
             $agendamento->status = 'Concluido';
             $agendamento->forma_pagamento = $forma;
             $agendamento->data_conclusao = date('Y-m-d H:i:s');
@@ -412,6 +450,94 @@ class AgendamentosCustomForm extends TPage
                 'page' => $dataRows['page'],
                 'per_page' => $dataRows['per_page'],
                 'message' => 'Agendamento concluido.'
+            ]);
+        }
+        catch (Exception $e)
+        {
+            TTransaction::rollback();
+            self::jsonResponse(['error' => true, 'message' => $e->getMessage()]);
+        }
+    }
+
+    /**
+     * Check InfinitePay payment status via polling
+     * Returns current status and completes agendamento if approved
+     */
+    public static function onCheckInfinitePay($param)
+    {
+        try
+        {
+            $agendamentoId = (int) ($param['agendamento_id'] ?? 0);
+            if ($agendamentoId <= 0)
+            {
+                throw new RuntimeException('Invalid agendamento ID.');
+            }
+
+            TTransaction::open(self::DB);
+
+            $agendamento = new Agendamento($agendamentoId);
+            $transacao = InfinitePayTransacao::findByAgendamentoId($agendamentoId);
+
+            if (empty($transacao))
+            {
+                throw new RuntimeException('No payment transaction found.');
+            }
+
+            // Consult current status from API
+            $service = new InfinitePayService;
+            $chargeInfo = $service->consultarCobranca($transacao->charge_id);
+
+            $statusAtual = $chargeInfo['status'] ?? $transacao->status;
+            $transacao->status = $statusAtual;
+            $transacao->webhook_payload = json_encode($chargeInfo);
+            $transacao->updated_at = date('Y-m-d H:i:s');
+            $transacao->store();
+
+            $concluido = false;
+
+            // Auto-complete if approved
+            if ($statusAtual === 'approved')
+            {
+                $statusAgendamento = strtolower((string) $agendamento->status);
+                $permitidos = ['agendado', 'confirmado', 'em atendimento'];
+
+                if (in_array($statusAgendamento, $permitidos, true))
+                {
+                    $agendamento->status = 'Concluido';
+                    $agendamento->data_conclusao = date('Y-m-d H:i:s');
+                    $agendamento->updated_at = date('Y-m-d H:i:s');
+                    $agendamento->store();
+
+                    // Generate cash movement
+                    $criteria = new TCriteria;
+                    $criteria->add(new TFilter('agendamento_id', '=', $agendamento->id));
+                    $repo = new TRepository('MovimentoCaixa');
+                    if ($repo->count($criteria) <= 0)
+                    {
+                        $mov = new MovimentoCaixa;
+                        $dataMovimento = $agendamento->data_conclusao ?: $agendamento->data_agendamento;
+                        $dataMovimento = Agendamento::normalizeDate((string) $dataMovimento);
+                        $mov->data_movimento = $dataMovimento;
+                        $mov->tipo = 'E';
+                        $mov->descricao = 'Agendamento #' . $agendamento->id . ' (InfinitePay)';
+                        $mov->valor = (float) ($agendamento->valor_cobrado ?? 0);
+                        $mov->categoria = 'Agendamento';
+                        $mov->agendamento_id = $agendamento->id;
+                        $mov->created_at = date('Y-m-d H:i:s');
+                        $mov->store();
+                    }
+
+                    $concluido = true;
+                }
+            }
+
+            TTransaction::close();
+
+            self::jsonResponse([
+                'success' => true,
+                'status' => $statusAtual,
+                'concluido' => $concluido,
+                'paid_at' => $chargeInfo['paid_at'] ?? null
             ]);
         }
         catch (Exception $e)

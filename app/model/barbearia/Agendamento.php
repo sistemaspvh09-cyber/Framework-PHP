@@ -29,6 +29,7 @@ class Agendamento extends TRecord
         parent::addAttribute('observacao');
         parent::addAttribute('valor_cobrado');
         parent::addAttribute('forma_pagamento');
+        parent::addAttribute('infinitepay_transacao_id');
         parent::addAttribute('created_at');
         parent::addAttribute('updated_at');
         parent::addAttribute('data_conclusao');

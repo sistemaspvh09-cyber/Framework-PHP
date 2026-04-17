@@ -228,5 +228,115 @@
     "en": "Category",
     "pt": "Categoria",
     "es": "Categoria"
+  },
+  {
+    "en": "InfinitePay Configuration",
+    "pt": "Configuração InfinitePay",
+    "es": "Configuración de InfinitePay"
+  },
+  {
+    "en": "Configure your InfinitePay credentials for Tap to Pay",
+    "pt": "Configure suas credenciais InfinitePay para Tap to Pay",
+    "es": "Configure sus credenciales de InfinitePay para Tap to Pay"
+  },
+  {
+    "en": "Client ID",
+    "pt": "ID do Cliente",
+    "es": "ID del Cliente"
+  },
+  {
+    "en": "Client Secret",
+    "pt": "Chave Secreta",
+    "es": "Clave Secreta"
+  },
+  {
+    "en": "Get your credentials from your InfinitePay dashboard",
+    "pt": "Obtenha suas credenciais no painel InfinitePay",
+    "es": "Obtenga sus credenciales del panel de InfinitePay"
+  },
+  {
+    "en": "Connect",
+    "pt": "Conectar",
+    "es": "Conectar"
+  },
+  {
+    "en": "Test Connection",
+    "pt": "Testar Conexão",
+    "es": "Probar Conexión"
+  },
+  {
+    "en": "Disconnect",
+    "pt": "Desconectar",
+    "es": "Desconectar"
+  },
+  {
+    "en": "Connected",
+    "pt": "Conectado",
+    "es": "Conectado"
+  },
+  {
+    "en": "Not configured",
+    "pt": "Não configurado",
+    "es": "No configurado"
+  },
+  {
+    "en": "Testing connection...",
+    "pt": "Testando conexão...",
+    "es": "Probando conexión..."
+  },
+  {
+    "en": "InfinitePay is not configured. Please configure it first.",
+    "pt": "InfinitePay não está configurado. Configure primeiro.",
+    "es": "InfinitePay no está configurado. Configúrelo primero."
+  },
+  {
+    "en": "Connection successful!",
+    "pt": "Conexão bem-sucedida!",
+    "es": "¡Conexión exitosa!"
+  },
+  {
+    "en": "Failed to authenticate with InfinitePay.",
+    "pt": "Falha ao autenticar com InfinitePay.",
+    "es": "Error al autenticar con InfinitePay."
+  },
+  {
+    "en": "Failed to create charge",
+    "pt": "Falha ao criar cobrança",
+    "es": "Error al crear cobro"
+  },
+  {
+    "en": "Charge not found.",
+    "pt": "Cobrança não encontrada.",
+    "es": "Cobro no encontrado."
+  },
+  {
+    "en": "InfinitePay Tap to Pay",
+    "pt": "InfinitePay Tap to Pay",
+    "es": "InfinitePay Tap to Pay"
+  },
+  {
+    "en": "Client ID is required.",
+    "pt": "ID do Cliente é obrigatório.",
+    "es": "ID del Cliente es obligatorio."
+  },
+  {
+    "en": "Client Secret is required.",
+    "pt": "Chave Secreta é obrigatória.",
+    "es": "Clave Secreta es obligatoria."
+  },
+  {
+    "en": "InfinitePay configured successfully!",
+    "pt": "InfinitePay configurado com sucesso!",
+    "es": "¡InfinitePay configurado exitosamente!"
+  },
+  {
+    "en": "Disconnected successfully.",
+    "pt": "Desconectado com sucesso.",
+    "es": "Desconectado exitosamente."
+  },
+  {
+    "en": "Integrations",
+    "pt": "Integrações",
+    "es": "Integraciones"
   }
 ]
