@@ -1,0 +1,449 @@
+<!--[main]-->
+<style>
+    :root {
+        --bb-bg: #ffffff;
+        --bb-surface: #ffffff;
+        --bb-ink: #121212;
+        --bb-muted: #6E6E6E;
+        --bb-border: rgba(18, 18, 18, 0.12);
+        --bb-primary: #4A2C2A;
+        --bb-primary-2: #121212;
+        --bb-shadow: 0 18px 40px rgba(18, 18, 18, 0.18);
+        --bb-radius: 18px;
+    }
+
+    .bb-page {
+        padding: 18px;
+        background: radial-gradient(circle at 12% 10%, #ffffff 0%, #f7f7f7 70%, rgba(18, 18, 18, 0.04) 100%);
+        color: var(--bb-ink);
+        font-family: 'Source Sans Pro', 'Segoe UI', sans-serif;
+    }
+
+    .bb-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .bb-title {
+        margin: 0;
+        font-weight: 900;
+        font-size: clamp(1.6rem, 1.2rem + 1.1vw, 2.2rem);
+        letter-spacing: 0.3px;
+    }
+
+    .bb-sub {
+        color: var(--bb-muted);
+        margin-top: 8px;
+        max-width: 700px;
+    }
+
+    .bb-card {
+        background: var(--bb-surface);
+        border-radius: var(--bb-radius);
+        border: 1px solid var(--bb-border);
+        box-shadow: var(--bb-shadow);
+        padding: 16px;
+    }
+
+    .bb-form {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 14px;
+    }
+
+    .bb-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .bb-label {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--bb-muted);
+    }
+
+    .bb-input {
+        border-radius: 14px !important;
+        height: 46px;
+        border: 1px solid rgba(31, 41, 55, 0.18) !important;
+        padding: 0 12px;
+    }
+
+    .bb-input:focus {
+        border-color: rgba(74, 44, 42, 0.6) !important;
+        box-shadow: 0 0 0 0.2rem rgba(74, 44, 42, 0.18) !important;
+    }
+
+    .bb-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .bb-btn {
+        height: 46px;
+        border-radius: 999px !important;
+        font-weight: 800;
+        padding: 0 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 8px 18px rgba(31, 41, 55, 0.12);
+    }
+
+    .bb-btn-primary {
+        background: linear-gradient(135deg, var(--bb-primary) 0%, var(--bb-primary-2) 100%) !important;
+        border: 0 !important;
+        color: #fff !important;
+    }
+
+    .bb-table-wrap {
+        margin-top: 16px;
+        border-radius: 16px;
+        border: 1px solid rgba(31, 41, 55, 0.12);
+        overflow: hidden;
+    }
+
+    .bb-table-toolbar {
+        display: flex;
+        align-items: flex-end;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-top: 16px;
+    }
+
+    .bb-pagination {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .bb-page-btn {
+        height: 38px;
+        border-radius: 999px !important;
+        padding: 0 14px;
+        font-weight: 700;
+        border: 1px solid rgba(31, 41, 55, 0.18) !important;
+        background: #fff !important;
+    }
+
+    .bb-page-info {
+        font-size: 0.9rem;
+        color: var(--bb-muted);
+        font-weight: 700;
+    }
+
+    .bb-table thead th {
+        background: rgba(201, 162, 77, 0.18);
+        font-weight: 800;
+        color: #1f2937;
+    }
+
+    @media (max-width: 767.98px) {
+        .bb-page { padding: 12px; }
+        .bb-form { grid-template-columns: repeat(1, 1fr); }
+        .bb-field { grid-column: 1 / -1 !important; }
+        .bb-actions { justify-content: stretch; }
+        .bb-btn { width: 100%; justify-content: center; }
+        .bb-table-toolbar { align-items: stretch; }
+        .bb-pagination { width: 100%; justify-content: space-between; }
+        .bb-page-btn { flex: 1; }
+    }
+
+    [data-bs-theme="dark"] .bb-page {
+        background: radial-gradient(circle at 12% 18%, #1a1a1a 0%, #121212 55%, #0b0b0b 100%);
+        color: #E6DCCB;
+    }
+
+    [data-bs-theme="dark"] .bb-card {
+        background: #121212;
+        border-color: rgba(201, 162, 77, 0.25);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-bs-theme="dark"] .bb-input,
+    [data-bs-theme="dark"] .bb-table-wrap {
+        background: #1a1a1a;
+        border-color: rgba(201, 162, 77, 0.25) !important;
+        color: #E6DCCB;
+    }
+
+    [data-bs-theme="dark"] .bb-label,
+    [data-bs-theme="dark"] .bb-sub {
+        color: #6E6E6E;
+    }
+
+    [data-bs-theme="dark"] .bb-page-btn {
+        background: #121212 !important;
+        color: #E6DCCB !important;
+        border-color: rgba(201, 162, 77, 0.35) !important;
+    }
+
+    [data-bs-theme="dark"] .bb-page-btn:disabled { opacity: 0.6; }
+    [data-bs-theme="dark"] .bb-table thead th {
+        background: rgba(201, 162, 77, 0.2);
+        color: #E6DCCB;
+    }
+</style>
+
+<div class="bb-page">
+    <div class="bb-topbar">
+        <div>
+            <h1 class="bb-title">{$page_title}</h1>
+            <div class="bb-sub">{$page_subtitle}</div>
+        </div>
+    </div>
+
+    <div class="bb-card">
+        <div class="bb-form">
+            <div class="bb-field" style="grid-column: span 4;">
+                <label class="bb-label">{$label_profissional}</label>
+                <select id="bb-filter-profissional" class="form-control bb-input"></select>
+            </div>
+            <div class="bb-field" style="grid-column: span 3;">
+                <label class="bb-label">{$label_data_inicio}</label>
+                <input id="bb-filter-data-inicio" type="date" class="form-control bb-input">
+            </div>
+            <div class="bb-field" style="grid-column: span 3;">
+                <label class="bb-label">{$label_data_fim}</label>
+                <input id="bb-filter-data-fim" type="date" class="form-control bb-input">
+            </div>
+            <div class="bb-field" style="grid-column: span 2;">
+                <label class="bb-label">{$label_status}</label>
+                <select id="bb-filter-status" class="form-control bb-input">
+                    <option value="">Todos</option>
+                    <option value="Agendado">Agendado</option>
+                    <option value="Confirmado">Confirmado</option>
+                    <option value="Em atendimento">Em atendimento</option>
+                    <option value="Concluido">Concluido</option>
+                    <option value="Cancelado">Cancelado</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="bb-actions mt-3">
+            <button type="button" id="bb-filter-apply" class="btn bb-btn bb-btn-primary">
+                <i class="fa fa-filter"></i> Filtrar
+            </button>
+        </div>
+
+        <div class="bb-table-toolbar">
+            <div class="bb-pagination">
+                <button type="button" id="bb-page-prev" class="btn bb-page-btn">Anterior</button>
+                <span id="bb-page-info" class="bb-page-info">Pagina 1 de 1</span>
+                <button type="button" id="bb-page-next" class="btn bb-page-btn">Proxima</button>
+            </div>
+        </div>
+
+        <div class="bb-table-wrap">
+            <div class="table-responsive">
+                <table class="table table-sm table-hover bb-table mb-0">
+                    <thead>
+                        <tr>
+                            <th>Cliente</th>
+                            <th>Profissional</th>
+                            <th>Servico</th>
+                            <th>Data</th>
+                            <th>Inicio</th>
+                            <th>Fim</th>
+                            <th>Status</th>
+                            <th class="text-center">Valor</th>
+                            <th class="text-center">Pagamento</th>
+                        </tr>
+                    </thead>
+                    <tbody id="bb-tbody">
+                        <tr>
+                            <td colspan="9" class="text-muted">Informe os filtros para carregar.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const RepUI = {
+            state: { rows: [], page: 1, perPage: 12, total: 0 },
+
+            init: function () {
+                this.bind();
+                this.initFilters();
+                this.loadProfissionais();
+            },
+
+            el: function (id) { return document.getElementById(id); },
+
+            bind: function () {
+                this.el('bb-filter-apply').addEventListener('click', () => {
+                    this.state.page = 1;
+                    this.loadState();
+                });
+                this.el('bb-page-prev').addEventListener('click', () => {
+                    if (this.state.page > 1) {
+                        this.state.page -= 1;
+                        this.loadState();
+                    }
+                });
+                this.el('bb-page-next').addEventListener('click', () => {
+                    const totalPages = this.getTotalPages();
+                    if (this.state.page < totalPages) {
+                        this.state.page += 1;
+                        this.loadState();
+                    }
+                });
+            },
+
+            initFilters: function () {
+                const today = new Date();
+                const iso = today.toISOString().slice(0, 10);
+                const inicio = this.el('bb-filter-data-inicio');
+                const fim = this.el('bb-filter-data-fim');
+                if (inicio && !inicio.value) inicio.value = iso;
+                if (fim && !fim.value) fim.value = iso;
+            },
+
+            callJson: function (action, onSuccess, onError) {
+                if (typeof __adianti_ajax_exec !== 'function') {
+                    if (onError) onError(new Error('__adianti_ajax_exec indisponivel'), null);
+                    return;
+                }
+
+                __adianti_ajax_exec(action, (result) => {
+                    let data;
+                    try {
+                        if (typeof result === 'string') {
+                            const trimmed = result.trim();
+                            if (trimmed.charAt(0) === '<') {
+                                if (onError) onError(new Error('HTML misturado no retorno'), result);
+                                return;
+                            }
+                            data = JSON.parse(trimmed);
+                        } else {
+                            data = result;
+                        }
+                    } catch (e) {
+                        if (onError) onError(e, result);
+                        return;
+                    }
+                    if (onSuccess) onSuccess(data);
+                }, false);
+            },
+
+            toast: function (type, message, place, icon) {
+                if (typeof __adianti_show_toast === 'function') {
+                    __adianti_show_toast(type, message, place || 'topRight', icon);
+                }
+            },
+
+            loadProfissionais: function () {
+                this.callJson('class=AtendimentosCustomForm&method=onGetProfissionais', (resp) => {
+                    const select = this.el('bb-filter-profissional');
+                    if (select) select.innerHTML = '<option value="">Todos</option>';
+                    (Array.isArray(resp) ? resp : []).forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.id;
+                        opt.textContent = item.nome;
+                        if (select) select.appendChild(opt);
+                    });
+                });
+            },
+
+            getListParams: function () {
+                const params = new URLSearchParams();
+                params.set('page', this.state.page);
+                params.set('per_page', this.state.perPage);
+                const prof = this.el('bb-filter-profissional').value || '';
+                const dataInicio = this.el('bb-filter-data-inicio').value || '';
+                const dataFim = this.el('bb-filter-data-fim').value || '';
+                const status = this.el('bb-filter-status').value || '';
+                if (prof) params.set('profissional_id_list', prof);
+                if (dataInicio) params.set('data_inicio_list', dataInicio);
+                if (dataFim) params.set('data_fim_list', dataFim);
+                if (status) params.set('status_list', status);
+                return params;
+            },
+
+            loadState: function () {
+                const dataInicio = this.el('bb-filter-data-inicio').value || '';
+                const dataFim = this.el('bb-filter-data-fim').value || '';
+                if (!dataInicio || !dataFim) {
+                    this.toast('warning', 'Informe a data inicial e a data final.');
+                    return;
+                }
+                const params = this.getListParams();
+                const action = 'class=AtendimentosCustomForm&method=onGetState&' + params.toString();
+                this.callJson(action, (resp) => {
+                    if (resp && resp.error) {
+                        this.toast('error', resp.message || 'Erro ao carregar.');
+                        return;
+                    }
+                    this.state.rows = resp.rows || [];
+                    this.state.total = Number(resp.total || 0);
+                    this.state.page = Number(resp.page || this.state.page || 1);
+                    this.state.perPage = Number(resp.per_page || this.state.perPage || 12);
+                    this.renderRows();
+                    this.renderPagination();
+                });
+            },
+
+            renderRows: function () {
+                const tbody = this.el('bb-tbody');
+                tbody.innerHTML = '';
+
+                if (!this.state.rows.length) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = '<td colspan="9" class="text-muted">Nenhum atendimento encontrado.</td>';
+                    tbody.appendChild(tr);
+                    return;
+                }
+
+                this.state.rows.forEach(row => {
+                    const tr = document.createElement('tr');
+                    const valor = this.formatMoney(Number(row.valor_cobrado || 0).toFixed(2));
+                    tr.innerHTML = `
+                        <td>${row.nome_cliente}</td>
+                        <td>${row.profissional || '-'}</td>
+                        <td>${row.servico || '-'}</td>
+                        <td>${row.data_formatada || row.data}</td>
+                        <td>${(row.hora_inicio || '').substring(0, 5)}</td>
+                        <td>${(row.hora_fim || '').substring(0, 5)}</td>
+                        <td>${row.status || '-'}</td>
+                        <td class="text-center">R$ ${valor}</td>
+                        <td class="text-center">${row.forma_pagamento || '-'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            },
+
+            renderPagination: function () {
+                const totalPages = this.getTotalPages();
+                const info = this.el('bb-page-info');
+                info.textContent = `Pagina ${this.state.page} de ${totalPages}`;
+                this.el('bb-page-prev').disabled = this.state.page <= 1;
+                this.el('bb-page-next').disabled = this.state.page >= totalPages;
+            },
+
+            getTotalPages: function () {
+                return Math.max(1, Math.ceil(this.state.total / this.state.perPage));
+            },
+
+            formatMoney: function (value) {
+                const number = Number(value);
+                if (Number.isNaN(number)) return '';
+                return number.toFixed(2).replace('.', ',');
+            }
+        };
+
+        RepUI.init();
+    })();
+</script>
+<!--[/main]-->

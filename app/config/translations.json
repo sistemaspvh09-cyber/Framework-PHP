@@ -1,0 +1,232 @@
+[
+  {
+    "en": "University",
+    "pt": "Universidade",
+    "es": "Universidad"
+  },
+  {
+    "en": "Library",
+    "pt": "Biblioteca",
+    "es": "Biblioteca"
+  },
+  {
+    "en": "Student",
+    "pt": "Estudante",
+    "es": "Estudiante"
+  },
+  {
+    "en": "Classroom",
+    "pt": "Sala de aula",
+    "es": "Aula"
+  },
+  {
+    "en": "Teacher",
+    "pt": "Professor",
+    "es": "Profesor"
+  },
+  {
+    "en": "Professionals",
+    "pt": "Profissionais",
+    "es": "Profesionales"
+  },
+  {
+    "en": "Manage your barbershop professionals.",
+    "pt": "Gerencie os profissionais da barbearia.",
+    "es": "Administre los profesionales de la barberia."
+  },
+  {
+    "en": "Name",
+    "pt": "Nome",
+    "es": "Nombre"
+  },
+  {
+    "en": "Phone",
+    "pt": "Telefone",
+    "es": "Telefono"
+  },
+  {
+    "en": "Active",
+    "pt": "Ativo",
+    "es": "Activo"
+  },
+  {
+    "en": "Save",
+    "pt": "Salvar",
+    "es": "Guardar"
+  },
+  {
+    "en": "Clear",
+    "pt": "Limpar",
+    "es": "Limpiar"
+  },
+  {
+    "en": "Services",
+    "pt": "Servicos",
+    "es": "Servicios"
+  },
+  {
+    "en": "Manage your barbershop services.",
+    "pt": "Gerencie os servicos da barbearia.",
+    "es": "Administre los servicios de la barberia."
+  },
+  {
+    "en": "Price",
+    "pt": "Preco",
+    "es": "Precio"
+  },
+  {
+    "en": "Duration (min)",
+    "pt": "Duracao (min)",
+    "es": "Duracion (min)"
+  },
+  {
+    "en": "Service links",
+    "pt": "Vinculo de servicos",
+    "es": "Vinculos de servicios"
+  },
+  {
+    "en": "Link professionals to services.",
+    "pt": "Vincule profissionais aos servicos.",
+    "es": "Vincule profesionales a servicios."
+  },
+  {
+    "en": "Professional",
+    "pt": "Profissional",
+    "es": "Profesional"
+  },
+  {
+    "en": "Service",
+    "pt": "Servico",
+    "es": "Servicio"
+  },
+  {
+    "en": "Appointments",
+    "pt": "Atendimentos",
+    "es": "Citas"
+  },
+  {
+    "en": "Manage barbershop appointments.",
+    "pt": "Gerencie os atendimentos da barbearia.",
+    "es": "Administre las citas de la barberia."
+  },
+  {
+    "en": "Appointments report.",
+    "pt": "Relatorio de atendimentos.",
+    "es": "Reporte de citas."
+  },
+  {
+    "en": "Start date",
+    "pt": "Data inicial",
+    "es": "Fecha inicial"
+  },
+  {
+    "en": "End date",
+    "pt": "Data final",
+    "es": "Fecha final"
+  },
+  {
+    "en": "Date",
+    "pt": "Data",
+    "es": "Fecha"
+  },
+  {
+    "en": "Start time",
+    "pt": "Horario de inicio",
+    "es": "Hora de inicio"
+  },
+  {
+    "en": "Status",
+    "pt": "Status",
+    "es": "Estado"
+  },
+  {
+    "en": "Client",
+    "pt": "Cliente",
+    "es": "Cliente"
+  },
+  {
+    "en": "Amount",
+    "pt": "Valor",
+    "es": "Importe"
+  },
+  {
+    "en": "Payment method",
+    "pt": "Forma de pagamento",
+    "es": "Metodo de pago"
+  },
+  {
+    "en": "Notes",
+    "pt": "Observacoes",
+    "es": "Notas"
+  },
+  {
+    "en": "Professional agenda",
+    "pt": "Agenda profissional",
+    "es": "Agenda profesional"
+  },
+  {
+    "en": "Manage weekly availability.",
+    "pt": "Gerencie a disponibilidade semanal.",
+    "es": "Administre la disponibilidad semanal."
+  },
+  {
+    "en": "Weekday",
+    "pt": "Dia da semana",
+    "es": "Dia de la semana"
+  },
+  {
+    "en": "End time",
+    "pt": "Horario de fim",
+    "es": "Hora de fin"
+  },
+  {
+    "en": "Interval (min)",
+    "pt": "Intervalo (min)",
+    "es": "Intervalo (min)"
+  },
+  {
+    "en": "Schedule",
+    "pt": "Agendar",
+    "es": "Agendar"
+  },
+  {
+    "en": "Quick appointment scheduling.",
+    "pt": "Agendamento rapido.",
+    "es": "Agendamiento rapido."
+  },
+  {
+    "en": "Cash movement",
+    "pt": "Movimento Caixa",
+    "es": "Movimiento de caja"
+  },
+  {
+    "en": "Track cash entries and exits.",
+    "pt": "Controle entradas e saidas do caixa.",
+    "es": "Controle entradas y salidas de caja."
+  },
+  {
+    "en": "Movement date",
+    "pt": "Data do movimento",
+    "es": "Fecha del movimiento"
+  },
+  {
+    "en": "Type",
+    "pt": "Tipo",
+    "es": "Tipo"
+  },
+  {
+    "en": "Description",
+    "pt": "Descricao",
+    "es": "Descripcion"
+  },
+  {
+    "en": "Value",
+    "pt": "Valor",
+    "es": "Valor"
+  },
+  {
+    "en": "Category",
+    "pt": "Categoria",
+    "es": "Categoria"
+  }
+]

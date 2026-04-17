@@ -1,0 +1,457 @@
+<!--[main]-->
+<style>
+    :root {
+        --bb-bg: #ffffff;
+        --bb-surface: #ffffff;
+        --bb-ink: #121212;
+        --bb-muted: #6E6E6E;
+        --bb-border: rgba(18, 18, 18, 0.12);
+        --bb-primary: #4A2C2A;
+        --bb-primary-2: #121212;
+        --bb-shadow: 0 18px 40px rgba(18, 18, 18, 0.18);
+        --bb-radius: 18px;
+    }
+
+    .bb-page {
+        padding: 18px;
+        background: radial-gradient(circle at 12% 10%, #ffffff 0%, #f7f7f7 70%, rgba(18, 18, 18, 0.04) 100%);
+        color: var(--bb-ink);
+        font-family: 'Source Sans Pro', 'Segoe UI', sans-serif;
+    }
+
+    .bb-topbar {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 18px;
+        flex-wrap: wrap;
+    }
+
+    .bb-title {
+        margin: 0;
+        font-weight: 900;
+        font-size: clamp(1.6rem, 1.2rem + 1.1vw, 2.2rem);
+        letter-spacing: 0.3px;
+    }
+
+    .bb-sub {
+        color: var(--bb-muted);
+        margin-top: 8px;
+        max-width: 700px;
+    }
+
+    .bb-card {
+        background: var(--bb-surface);
+        border-radius: var(--bb-radius);
+        border: 1px solid var(--bb-border);
+        box-shadow: var(--bb-shadow);
+        padding: 16px;
+    }
+
+    .bb-form {
+        display: grid;
+        grid-template-columns: repeat(12, 1fr);
+        gap: 14px;
+    }
+
+    .bb-field {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .bb-label {
+        font-size: 0.88rem;
+        font-weight: 700;
+        color: var(--bb-muted);
+    }
+
+    .bb-input {
+        border-radius: 14px !important;
+        height: 46px;
+        border: 1px solid rgba(31, 41, 55, 0.18) !important;
+        padding: 0 12px;
+    }
+
+    .bb-textarea {
+        height: auto;
+        min-height: 90px;
+        padding: 10px 12px;
+        resize: vertical;
+    }
+
+    .bb-input:focus {
+        border-color: rgba(74, 44, 42, 0.6) !important;
+        box-shadow: 0 0 0 0.2rem rgba(74, 44, 42, 0.18) !important;
+    }
+
+    .bb-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        flex-wrap: wrap;
+    }
+
+    .bb-btn {
+        height: 46px;
+        border-radius: 999px !important;
+        font-weight: 800;
+        padding: 0 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        box-shadow: 0 8px 18px rgba(31, 41, 55, 0.12);
+    }
+
+    .bb-btn-primary {
+        background: linear-gradient(135deg, var(--bb-primary) 0%, var(--bb-primary-2) 100%) !important;
+        border: 0 !important;
+        color: #fff !important;
+    }
+
+    .bb-btn-outline {
+        background: #fff !important;
+        border: 1px solid rgba(31, 41, 55, 0.18) !important;
+    }
+
+    .bb-slots {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-top: 6px;
+    }
+
+    .bb-slot {
+        border-radius: 999px;
+        padding: 8px 14px;
+        border: 1px solid rgba(31, 41, 55, 0.18);
+        background: #fff;
+        cursor: pointer;
+        font-weight: 700;
+        transition: transform 0.15s ease, box-shadow 0.15s ease;
+    }
+
+    .bb-slot:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 6px 14px rgba(31, 41, 55, 0.12);
+    }
+
+    .bb-slot.active {
+        background: var(--bb-primary);
+        color: #fff;
+        border-color: var(--bb-primary);
+    }
+
+    .bb-hint {
+        font-size: 0.85rem;
+        color: var(--bb-muted);
+        margin-top: 6px;
+    }
+
+    @media (max-width: 767.98px) {
+        .bb-page { padding: 12px; }
+        .bb-form { grid-template-columns: repeat(1, 1fr); }
+        .bb-field { grid-column: 1 / -1 !important; }
+        .bb-actions { justify-content: stretch; }
+        .bb-btn { width: 100%; justify-content: center; }
+    }
+
+    [data-bs-theme="dark"] .bb-page {
+        background: radial-gradient(circle at 12% 18%, #1a1a1a 0%, #121212 55%, #0b0b0b 100%);
+        color: #E6DCCB;
+    }
+
+    [data-bs-theme="dark"] .bb-card {
+        background: #121212;
+        border-color: rgba(201, 162, 77, 0.25);
+        box-shadow: 0 18px 40px rgba(0, 0, 0, 0.4);
+    }
+
+    [data-bs-theme="dark"] .bb-input {
+        background: #1a1a1a;
+        border-color: rgba(201, 162, 77, 0.25) !important;
+        color: #E6DCCB;
+    }
+
+    [data-bs-theme="dark"] .bb-label,
+    [data-bs-theme="dark"] .bb-sub {
+        color: #6E6E6E;
+    }
+
+    [data-bs-theme="dark"] .bb-btn-outline {
+        background: #121212 !important;
+        color: #E6DCCB !important;
+        border-color: rgba(201, 162, 77, 0.35) !important;
+    }
+
+    [data-bs-theme="dark"] .bb-slot {
+        background: #1a1a1a;
+        color: #E6DCCB;
+        border-color: rgba(201, 162, 77, 0.25);
+    }
+
+    [data-bs-theme="dark"] .bb-slot.active {
+        background: #4A2C2A;
+        border-color: #4A2C2A;
+    }
+</style>
+
+<div class="bb-page">
+    <div class="bb-topbar">
+        <div>
+            <h1 class="bb-title">{$page_title}</h1>
+            <div class="bb-sub">{$page_subtitle}</div>
+        </div>
+    </div>
+
+    <div class="bb-card">
+        <div class="bb-form">
+            <div class="bb-field" style="grid-column: span 4;">
+                <label class="bb-label">{$label_profissional}</label>
+                <select id="bb-profissional" class="form-control bb-input"></select>
+            </div>
+            <div class="bb-field" style="grid-column: span 4;">
+                <label class="bb-label">{$label_servico}</label>
+                <select id="bb-servico" class="form-control bb-input"></select>
+            </div>
+            <div class="bb-field" style="grid-column: span 2;">
+                <label class="bb-label">{$label_data}</label>
+                <input id="bb-data" type="date" class="form-control bb-input">
+            </div>
+            <div class="bb-field" style="grid-column: span 2;">
+                <label class="bb-label">{$label_hora}</label>
+                <input id="bb-hora" type="text" class="form-control bb-input" placeholder="Selecione" readonly>
+            </div>
+            <div class="bb-field" style="grid-column: span 12;">
+                <label class="bb-label">Horarios disponiveis</label>
+                <div id="bb-slots" class="bb-slots"></div>
+            </div>
+            <div class="bb-field" style="grid-column: span 6;">
+                <label class="bb-label">{$label_nome}</label>
+                <input id="bb-nome" type="text" class="form-control bb-input" placeholder="Nome do cliente">
+            </div>
+            <div class="bb-field" style="grid-column: span 6;">
+                <label class="bb-label">{$label_telefone}</label>
+                <input id="bb-telefone" type="text" class="form-control bb-input" placeholder="(00) 00000-0000">
+            </div>
+            <div class="bb-field" style="grid-column: span 12;">
+                <label class="bb-label">{$label_observacao}</label>
+                <textarea id="bb-observacao" class="form-control bb-input bb-textarea" rows="3" placeholder="Observacao"></textarea>
+            </div>
+        </div>
+
+        <div class="bb-actions mt-3">
+            <button type="button" id="bb-btn-clear" class="btn bb-btn bb-btn-outline">
+                <i class="fa fa-eraser"></i> {$btn_clear}
+            </button>
+            <button type="button" id="bb-btn-save" class="btn bb-btn bb-btn-primary">
+                <i class="fa fa-check"></i> {$btn_save}
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    (function () {
+        const AgendarUI = {
+            state: { slots: [] },
+
+            init: function () {
+                this.bind();
+                this.initDate();
+                this.loadProfissionais();
+            },
+
+            el: function (id) { return document.getElementById(id); },
+
+            bind: function () {
+                this.el('bb-btn-save').addEventListener('click', () => this.upsert());
+                this.el('bb-btn-clear').addEventListener('click', () => this.resetForm());
+                this.el('bb-profissional').addEventListener('change', () => {
+                    this.loadServicos();
+                    this.loadSlots();
+                });
+                this.el('bb-servico').addEventListener('change', () => this.loadSlots());
+                this.el('bb-data').addEventListener('change', () => this.loadSlots());
+                this.el('bb-slots').addEventListener('click', (e) => {
+                    const btn = e.target.closest('[data-slot]');
+                    if (!btn) return;
+                    this.selectSlot(btn.getAttribute('data-slot'));
+                });
+
+                const telefone = this.el('bb-telefone');
+                telefone.addEventListener('input', () => {
+                    telefone.value = this.formatPhone(telefone.value);
+                });
+            },
+
+            initDate: function () {
+                const input = this.el('bb-data');
+                if (input && !input.value) {
+                    const today = new Date();
+                    input.value = today.toISOString().slice(0, 10);
+                }
+            },
+
+            callJson: function (action, onSuccess, onError) {
+                if (typeof __adianti_ajax_exec !== 'function') {
+                    if (onError) onError(new Error('__adianti_ajax_exec indisponivel'), null);
+                    return;
+                }
+
+                __adianti_ajax_exec(action, (result) => {
+                    let data;
+                    try {
+                        if (typeof result === 'string') {
+                            const trimmed = result.trim();
+                            if (trimmed.charAt(0) === '<') {
+                                if (onError) onError(new Error('HTML misturado no retorno'), result);
+                                return;
+                            }
+                            data = JSON.parse(trimmed);
+                        } else {
+                            data = result;
+                        }
+                    } catch (e) {
+                        if (onError) onError(e, result);
+                        return;
+                    }
+                    if (onSuccess) onSuccess(data);
+                }, false);
+            },
+
+            toast: function (type, message, place, icon) {
+                if (typeof __adianti_show_toast === 'function') {
+                    __adianti_show_toast(type, message, place || 'topRight', icon);
+                }
+            },
+
+            formatPhone: function (value) {
+                const digits = String(value || '').replace(/\D/g, '').slice(0, 11);
+                if (!digits) return '';
+                const ddd = digits.substring(0, 2);
+                if (digits.length <= 10) {
+                    const part1 = digits.substring(2, 6);
+                    const part2 = digits.substring(6, 10);
+                    return `(${ddd})${part1 ? ' ' + part1 : ''}${part2 ? '-' + part2 : ''}`.trim();
+                }
+                const part1 = digits.substring(2, 7);
+                const part2 = digits.substring(7, 11);
+                return `(${ddd}) ${part1}-${part2}`.trim();
+            },
+
+            loadProfissionais: function () {
+                this.callJson('class=AgendarCustomForm&method=onGetProfissionais', (resp) => {
+                    const select = this.el('bb-profissional');
+                    if (select) select.innerHTML = '<option value="">Selecione...</option>';
+                    (Array.isArray(resp) ? resp : []).forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.id;
+                        opt.textContent = item.nome;
+                        if (select) select.appendChild(opt);
+                    });
+                });
+            },
+
+            loadServicos: function () {
+                const profId = this.el('bb-profissional').value || '';
+                const action = 'class=AgendarCustomForm&method=onGetServicos&profissional_id=' + encodeURIComponent(profId);
+                this.callJson(action, (resp) => {
+                    const select = this.el('bb-servico');
+                    select.innerHTML = '<option value="">Selecione...</option>';
+                    (Array.isArray(resp) ? resp : []).forEach(item => {
+                        const opt = document.createElement('option');
+                        opt.value = item.id;
+                        opt.dataset.preco = item.preco || 0;
+                        opt.textContent = `${item.nome}`;
+                        select.appendChild(opt);
+                    });
+                });
+            },
+
+            loadSlots: function () {
+                const profId = this.el('bb-profissional').value || '';
+                const servId = this.el('bb-servico').value || '';
+                const data = this.el('bb-data').value || '';
+                if (!profId || !servId || !data) {
+                    this.renderSlots([]);
+                    return;
+                }
+
+                const action = 'class=AgendarCustomForm&method=onGetHorarios&profissional_id=' +
+                    encodeURIComponent(profId) + '&servico_id=' + encodeURIComponent(servId) +
+                    '&data=' + encodeURIComponent(data);
+
+                this.callJson(action, (resp) => {
+                    if (resp && resp.error) return;
+                    this.state.slots = resp.slots || [];
+                    this.renderSlots(this.state.slots);
+                });
+            },
+
+            renderSlots: function (slots) {
+                const box = this.el('bb-slots');
+                box.innerHTML = '';
+                if (!slots.length) {
+                    const hint = document.createElement('div');
+                    hint.className = 'bb-hint';
+                    hint.textContent = 'Nenhum horario disponivel.';
+                    box.appendChild(hint);
+                    return;
+                }
+                slots.forEach(slot => {
+                    const btn = document.createElement('button');
+                    btn.type = 'button';
+                    btn.className = 'bb-slot';
+                    btn.setAttribute('data-slot', slot.hora_inicio);
+                    btn.textContent = (slot.hora_inicio || '').substring(0, 5);
+                    box.appendChild(btn);
+                });
+            },
+
+            selectSlot: function (value) {
+                this.el('bb-hora').value = value || '';
+                const buttons = this.el('bb-slots').querySelectorAll('[data-slot]');
+                buttons.forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('data-slot') === value);
+                });
+            },
+
+            resetForm: function () {
+                this.el('bb-profissional').value = '';
+                this.el('bb-servico').value = '';
+                this.el('bb-hora').value = '';
+                this.el('bb-nome').value = '';
+                this.el('bb-telefone').value = '';
+                this.el('bb-observacao').value = '';
+                this.renderSlots([]);
+            },
+
+            upsert: function () {
+                const payload = {
+                    profissional_id: this.el('bb-profissional').value || '',
+                    servico_id: this.el('bb-servico').value || '',
+                    data: this.el('bb-data').value || '',
+                    hora_inicio: this.el('bb-hora').value || '',
+                    nome_cliente: this.el('bb-nome').value || '',
+                    telefone_cliente: this.el('bb-telefone').value || '',
+                    observacao: this.el('bb-observacao').value || ''
+                };
+
+                const action = 'class=AgendarCustomForm&method=onUpsert&payload_json=' + encodeURIComponent(JSON.stringify(payload));
+                this.callJson(action, (resp) => {
+                    if (resp && resp.error) {
+                        this.toast('error', resp.message || 'Erro ao agendar.');
+                        return;
+                    }
+                    this.toast('success', resp.message || 'Agendamento criado.');
+                    this.resetForm();
+                });
+            }
+        };
+
+        AgendarUI.init();
+    })();
+</script>
+<!--[/main]-->

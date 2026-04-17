@@ -1,0 +1,254 @@
+<?php
+class ServicosCustomForm extends TPage
+{
+    protected $html;
+
+    private const DB = 'barbearia';
+
+    public function __construct($param = null)
+    {
+        parent::__construct();
+
+        if (!empty($param['target_container']))
+        {
+            $this->adianti_target_container = $param['target_container'];
+        }
+
+        $this->html = new THtmlRenderer('app/resources/barbearia/servicos_custom_form.html');
+        $this->html->enableSection('main', [
+            'page_title' => _t('Services'),
+            'page_subtitle' => _t('Manage your barbershop services.'),
+            'label_nome' => _t('Name'),
+            'label_preco' => _t('Price'),
+            'label_duracao' => _t('Duration (min)'),
+            'label_ativo' => _t('Active'),
+            'btn_save' => _t('Save'),
+            'btn_clear' => _t('Clear')
+        ]);
+
+        $panel = new TPanelGroup(_t('Services'));
+        $panel->add($this->html);
+
+        $vbox = new TVBox;
+        $vbox->style = 'width: 100%';
+        $vbox->add($panel);
+
+        parent::add($vbox);
+    }
+
+    public static function onGetState($param)
+    {
+        try
+        {
+            TTransaction::open(self::DB);
+
+            $data = self::loadRows($param);
+
+            TTransaction::close();
+
+            self::jsonResponse($data);
+        }
+        catch (Exception $e)
+        {
+            TTransaction::rollback();
+            self::jsonResponse(['error' => true, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public static function onUpsert($param)
+    {
+        try
+        {
+            $payload = self::getPayload($param);
+
+            $id = (int) ($payload['id'] ?? 0);
+            $nome = trim((string) ($payload['nome'] ?? ''));
+            $preco = (string) ($payload['preco'] ?? '');
+            $duracao = (int) ($payload['duracao_minutos'] ?? 0);
+            $ativo = trim((string) ($payload['ativo'] ?? 'Y'));
+
+            if ($nome === '')
+            {
+                throw new RuntimeException('Informe o nome.');
+            }
+
+            if ($duracao <= 0)
+            {
+                throw new RuntimeException('Informe a duracao.');
+            }
+
+            if ($ativo === '')
+            {
+                $ativo = 'Y';
+            }
+
+            $precoValue = $preco !== '' ? (float) $preco : 0.0;
+
+            TTransaction::open(self::DB);
+
+            $object = $id > 0 ? new Servico($id) : new Servico;
+            $object->nome = $nome;
+            $object->preco = $precoValue;
+            $object->duracao_minutos = $duracao;
+            $object->ativo = $ativo;
+            $object->updated_at = date('Y-m-d H:i:s');
+            if ($id <= 0)
+            {
+                $object->created_at = date('Y-m-d H:i:s');
+            }
+            $object->store();
+
+            $dataRows = self::loadRows(array_merge($param, $payload));
+
+            TTransaction::close();
+
+            self::jsonResponse([
+                'success' => true,
+                'rows' => $dataRows['rows'],
+                'total' => $dataRows['total'],
+                'page' => $dataRows['page'],
+                'per_page' => $dataRows['per_page'],
+                'message' => 'Servico salvo.'
+            ]);
+        }
+        catch (Exception $e)
+        {
+            TTransaction::rollback();
+            self::jsonResponse(['error' => true, 'message' => $e->getMessage()]);
+        }
+    }
+
+    public static function onDelete($param)
+    {
+        try
+        {
+            $id = (int) ($param['id'] ?? 0);
+            if ($id <= 0)
+            {
+                throw new RuntimeException('Registro invalido.');
+            }
+
+            TTransaction::open(self::DB);
+
+            $object = new Servico($id);
+            $object->delete();
+
+            $dataRows = self::loadRows($param);
+
+            TTransaction::close();
+
+            self::jsonResponse([
+                'success' => true,
+                'rows' => $dataRows['rows'],
+                'total' => $dataRows['total'],
+                'page' => $dataRows['page'],
+                'per_page' => $dataRows['per_page'],
+                'message' => 'Servico removido.'
+            ]);
+        }
+        catch (Exception $e)
+        {
+            TTransaction::rollback();
+            self::jsonResponse(['error' => true, 'message' => $e->getMessage()]);
+        }
+    }
+
+    private static function loadRows(array $param): array
+    {
+        $filters = self::resolveListParams($param);
+        $criteria = self::buildListCriteria($filters);
+
+        $repository = new TRepository('Servico');
+        $total = $repository->count(clone $criteria);
+
+        $criteria = self::buildListCriteria($filters);
+        $criteria->setProperty('order', 'nome asc');
+        $criteria->setProperty('limit', $filters['per_page']);
+        $criteria->setProperty('offset', ($filters['page'] - 1) * $filters['per_page']);
+
+        $rows = $repository->load($criteria, false);
+
+        $data = [];
+        if ($rows)
+        {
+            foreach ($rows as $row)
+            {
+                $data[] = [
+                    'id' => (int) $row->id,
+                    'nome' => (string) $row->nome,
+                    'preco' => (float) ($row->preco ?? 0),
+                    'duracao_minutos' => (int) ($row->duracao_minutos ?? 0),
+                    'ativo' => (string) $row->ativo
+                ];
+            }
+        }
+
+        return [
+            'rows' => $data,
+            'total' => $total,
+            'page' => $filters['page'],
+            'per_page' => $filters['per_page'],
+            'filters' => [
+                'nome' => $filters['nome'],
+                'ativo' => $filters['ativo']
+            ]
+        ];
+    }
+
+    private static function resolveListParams(array $param): array
+    {
+        $nome = trim((string) ($param['nome_list'] ?? $param['nome'] ?? ''));
+        $ativo = trim((string) ($param['ativo_list'] ?? $param['ativo'] ?? ''));
+
+        $page = max(1, (int) ($param['page'] ?? 1));
+        $perPage = (int) ($param['per_page'] ?? 12);
+        if ($perPage <= 0)
+        {
+            $perPage = 12;
+        }
+
+        return [
+            'nome' => $nome,
+            'ativo' => $ativo,
+            'page' => $page,
+            'per_page' => $perPage
+        ];
+    }
+
+    private static function buildListCriteria(array $filters): TCriteria
+    {
+        $criteria = new TCriteria;
+
+        if (!empty($filters['nome']))
+        {
+            $criteria->add(new TFilter('nome', 'like', '%' . $filters['nome'] . '%'));
+        }
+
+        if (!empty($filters['ativo']))
+        {
+            $criteria->add(new TFilter('ativo', '=', $filters['ativo']));
+        }
+
+        return $criteria;
+    }
+
+    private static function getPayload(array $param): array
+    {
+        $payloadJson = (string) ($param['payload_json'] ?? '{}');
+        $payload = json_decode($payloadJson, true);
+        if (!is_array($payload))
+        {
+            throw new RuntimeException('Payload invalido.');
+        }
+
+        return $payload;
+    }
+
+    private static function jsonResponse($data, int $statusCode = 200): void
+    {
+        http_response_code($statusCode);
+        header('Content-Type: application/json; charset=utf-8');
+        echo json_encode($data, JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES);
+        exit;
+    }
+}
