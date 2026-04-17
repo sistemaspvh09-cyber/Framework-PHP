@@ -138,8 +138,6 @@ class InfinitePayService
      */
     public function criarCobranca($valor, $descricao, $agendamentoId)
     {
-        TTransaction::open(self::DB);
-
         try
         {
             $this->renovarTokenSeNecessario();
@@ -180,18 +178,16 @@ class InfinitePayService
             // Create transaction record
             $transacao = new InfinitePayTransacao;
             $transacao->agendamento_id = (int) $agendamentoId;
-            $transacao->charge_id = $result['id'];
+            $transacao->infinitepay_charge_id = $result['id'];
             $transacao->valor = (float) $valor;
             $transacao->status = $result['status'] ?? 'pending';
-            $transacao->webhook_payload = json_encode($result);
-            $transacao->created_at = date('Y-m-d H:i:s');
-            $transacao->store();
+            $transacao->response_data = json_encode($result);
+            $transacao->save();
 
             // Link transaction in agendamento
             $agendamento = new Agendamento($agendamentoId);
             $agendamento->infinitepay_transacao_id = $transacao->id;
-            $agendamento->updated_at = date('Y-m-d H:i:s');
-            $agendamento->store();
+            $agendamento->save();
 
             TTransaction::close();
 
@@ -204,7 +200,6 @@ class InfinitePayService
         }
         catch (Exception $e)
         {
-            TTransaction::rollback();
             throw $e;
         }
     }
@@ -217,8 +212,6 @@ class InfinitePayService
      */
     public function consultarCobranca($chargeId)
     {
-        TTransaction::open(self::DB);
-
         try
         {
             $this->renovarTokenSeNecessario();
@@ -245,13 +238,10 @@ class InfinitePayService
                 throw new Exception(_t('Charge not found.'));
             }
 
-            TTransaction::close();
-
             return $result;
         }
         catch (Exception $e)
         {
-            TTransaction::rollback();
             throw $e;
         }
     }
@@ -266,8 +256,6 @@ class InfinitePayService
      */
     public function processarWebhook($payload, $signature)
     {
-        TTransaction::open(self::DB);
-
         try
         {
             $config = $this->getConfig();
@@ -298,9 +286,8 @@ class InfinitePayService
 
             // Update transaction
             $transacao->status = $payload['status'] ?? 'pending';
-            $transacao->webhook_payload = json_encode($payload);
-            $transacao->updated_at = date('Y-m-d H:i:s');
-            $transacao->store();
+            $transacao->response_data = json_encode($payload);
+            $transacao->save();
 
             // Auto-complete agendamento if approved
             if ($transacao->status === 'approved')
@@ -314,20 +301,17 @@ class InfinitePayService
                     $agendamento->status = 'Concluido';
                     $agendamento->forma_pagamento = 'InfinitePay';
                     $agendamento->data_conclusao = date('Y-m-d H:i:s');
-                    $agendamento->updated_at = date('Y-m-d H:i:s');
-                    $agendamento->store();
+                    $agendamento->save();
 
                     // Generate cash movement
                     self::gerarMovimentoCaixa($agendamento);
                 }
             }
 
-            TTransaction::close();
             return true;
         }
         catch (Exception $e)
         {
-            TTransaction::rollback();
             throw $e;
         }
     }
@@ -338,10 +322,9 @@ class InfinitePayService
      */
     private static function gerarMovimentoCaixa(Agendamento $agendamento)
     {
-        $criteria = new TCriteria;
-        $criteria->add(new TFilter('agendamento_id', '=', $agendamento->id));
-        $repo = new TRepository('MovimentoCaixa');
-        if ($repo->count($criteria) > 0)
+        // Check if movement already exists
+        $existing = MovimentoCaixa::findBy(['agendamento_id' => $agendamento->id]);
+        if (!empty($existing))
         {
             return;
         }
@@ -355,8 +338,7 @@ class InfinitePayService
         $mov->valor = (float) ($agendamento->valor_cobrado ?? 0);
         $mov->categoria = 'Agendamento';
         $mov->agendamento_id = $agendamento->id;
-        $mov->created_at = date('Y-m-d H:i:s');
-        $mov->store();
+        $mov->save();
     }
 
     /**
@@ -366,8 +348,6 @@ class InfinitePayService
      */
     public function testarConexao()
     {
-        TTransaction::open(self::DB);
-
         try
         {
             $this->autenticar();
@@ -378,8 +358,6 @@ class InfinitePayService
                 throw new Exception(_t('Authentication failed: no access token.'));
             }
 
-            TTransaction::close();
-
             return [
                 'success' => true,
                 'message' => _t('Connection successful!')
@@ -387,7 +365,6 @@ class InfinitePayService
         }
         catch (Exception $e)
         {
-            TTransaction::rollback();
             return [
                 'success' => false,
                 'message' => $e->getMessage()

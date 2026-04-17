@@ -6,33 +6,17 @@
  * @package    model
  * @subpackage barbearia
  */
-class Agendamento extends TRecord
+class Agendamento extends SupabaseRecord
 {
-    const TABLENAME  = 'agendamento';
-    const PRIMARYKEY = 'id';
-    const IDPOLICY   = 'max'; // {max, serial}
+    protected $tableName = 'agendamentos';
+    protected $primaryKey = 'id';
 
     /**
      * Constructor method
      */
-    public function __construct($id = NULL, $callObjectLoad = TRUE)
+    public function __construct($id = NULL)
     {
-        parent::__construct($id, $callObjectLoad);
-        parent::addAttribute('profissional_id');
-        parent::addAttribute('servico_id');
-        parent::addAttribute('data_agendamento');
-        parent::addAttribute('hora_inicio');
-        parent::addAttribute('hora_fim');
-        parent::addAttribute('status');
-        parent::addAttribute('nome_cliente');
-        parent::addAttribute('telefone_cliente');
-        parent::addAttribute('observacao');
-        parent::addAttribute('valor_cobrado');
-        parent::addAttribute('forma_pagamento');
-        parent::addAttribute('infinitepay_transacao_id');
-        parent::addAttribute('created_at');
-        parent::addAttribute('updated_at');
-        parent::addAttribute('data_conclusao');
+        parent::__construct($id);
     }
 
     /**
@@ -145,14 +129,13 @@ class Agendamento extends TRecord
             return true;
         }
 
-        $criteria = new TCriteria;
-        $criteria->add(new TFilter('profissional_id', '=', $profissionalId));
-        $criteria->add(new TFilter('data_agendamento', '=', $data));
+        // Buscar agendamentos do profissional na data
+        $agendamentos = self::findBy([
+            'profissional_id' => $profissionalId,
+            'data_agendamento' => $data
+        ]);
 
-        $repo = new TRepository('Agendamento');
-        $rows = $repo->load($criteria, false);
-
-        if (!$rows)
+        if (empty($agendamentos))
         {
             return false;
         }
@@ -160,21 +143,21 @@ class Agendamento extends TRecord
         $inicio = self::timeToMinutes(self::normalizeTime($horaInicio));
         $fim = self::timeToMinutes(self::normalizeTime($horaFim));
 
-        foreach ($rows as $row)
+        foreach ($agendamentos as $agendamento)
         {
-            if ($ignoreId && (int) $row->id === (int) $ignoreId)
+            if ($ignoreId && (int) $agendamento['id'] === (int) $ignoreId)
             {
                 continue;
             }
 
-            $status = strtolower((string) $row->status);
+            $status = strtolower((string) $agendamento['status']);
             if ($status === 'cancelado')
             {
                 continue;
             }
 
-            $iniAg = self::timeToMinutes(self::normalizeTime($row->hora_inicio));
-            $fimAg = self::timeToMinutes(self::normalizeTime($row->hora_fim));
+            $iniAg = self::timeToMinutes(self::normalizeTime($agendamento['hora_inicio']));
+            $fimAg = self::timeToMinutes(self::normalizeTime($agendamento['hora_fim']));
             if ($inicio < $fimAg && $fim > $iniAg)
             {
                 return true;
